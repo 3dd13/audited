@@ -16,14 +16,13 @@ module Audited
       class Audit < ::ActiveRecord::Base
         include Audited::Audit
 
-
         serialize :audited_changes
 
-        default_scope         order(:version)
-        scope :descending,    reorder("version DESC")
-        scope :creates,       :conditions => {:action => 'create'}
-        scope :updates,       :conditions => {:action => 'update'}
-        scope :destroys,      :conditions => {:action => 'destroy'}
+        default_scope         -> { order(:version) }
+        scope :descending,    -> { reorder("version DESC") }
+        scope :creates,       -> { where(:action => 'create') }
+        scope :updates,       -> { where(:action => 'update') }
+        scope :destroys,      -> { where(:action => 'destroy') }
 
         scope :up_until,      lambda {|date_or_time| where("created_at <= ?", date_or_time) }
         scope :from_version,  lambda {|version| where(['version >= ?', version]) }
